@@ -1,6 +1,6 @@
 import wikipediaapi
 import time 
-import queue as Queue
+from queue import Queue
 
 user_agent = "p4_wiki (NathanYang557@gmail.com)"
 wiki = wikipediaapi.Wikipedia(user_agent,"en")
@@ -18,7 +18,19 @@ def wikipedia_solver(start_page,target_page):
     visited = set()
     queue = Queue()
     parent = {}
-     
+    queue.put(start_page.title)
+    visited.add(start_page.title)
+    while not queue.empty():
+        current_page_title = queue.get()
+        if current_page_title == target_page.title:
+            break
+        current_page = wiki.page(current_page_title)
+        links = fetch_links(current_page)
+        for link in links:
+            if link not in visited:
+                queue.put(link)
+                visited.add(link)
+                parent[link] = current_page_title
 
     path = []
     page_title = target_page.title
@@ -34,5 +46,5 @@ def wikipedia_solver(start_page,target_page):
 #create start & target pages
 start_page = wiki.page("Pasadena High School (California)")
 target_page = wiki.page("Wheel of Fortune (American game show)")
-path = wikipedia_solver(start_page,target_page)
+path = wikipedia_solver(start_page, target_page)
 print(path)
